@@ -26,19 +26,24 @@ class FunctionTestMixin:
         y = self.forward(*xs)
         y.backward()
 
-    def test_forward(self):
-        xs, expected_y = self.get_forward_input_output()
+    def forward_check(self, xs, expected_y):
         xs = as_variable(xs)
         y = self.forward(*xs)
         self.assertEqual(y.data, expected_y)
 
-    def test_backward(self):
-        xs, expected_grads = self.get_backward_input_output()
+    def backward_check(self, xs, expected_grads):
         xs = as_variable(xs)
         expected_grads = as_tuple(expected_grads)
         self.forward_and_backward(*xs)
         for x, expected_grad in zip(xs, expected_grads):
             self.assertEqual(x.grad, expected_grad)
+
+    def test_forward(self):
+        self.forward_check(*self.get_forward_input_output())
+
+    def test_backward(self):
+        xs, expected_grads = self.get_backward_input_output()
+        self.backward_check(*self.get_backward_input_output())
 
     # TODO: how could we test gradient check for multi input function?
     # def test_gradient_check(self):
@@ -93,3 +98,15 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
         x = np.array(2), np.array(3)
         grad_y = np.array(1), np.array(1)
         return x, grad_y
+
+    def test_step14_forward_same_variable(self):
+        x = Variable(np.array(3.0))
+        xs = (x, x)
+        expected_ys = np.array(6.0)
+        self.forward_check(xs, expected_ys)
+
+    def test_step14_backward_same_variable(self):
+        x = Variable(np.array(3.0))
+        xs = (x, x)
+        expected_grad = np.array(2.0)
+        self.backward_check(xs, expected_grad)

@@ -19,9 +19,10 @@ def as_variable(xs):
     if not isinstance(xs, tuple):
         xs = (xs,)
 
-    xs = [Variable(x) for x in xs]
+    xs = [Variable(x) if not isinstance(x, Variable) else x for x in xs]
 
     return xs if len(xs) > 0 else xs[0]
+
 
 def numerical_diff(f, x, eps=1e-4):
     """
