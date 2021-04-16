@@ -11,6 +11,7 @@ class Function:
             ys = (ys, )
         outputs = [Variable(as_array(y)) for y in ys]
 
+        self.generation = max([x.generation for x in inputs])
         for output in outputs:
             output.set_creator(self)
 
@@ -23,6 +24,9 @@ class Function:
 
     def backward(self, *gy):
         raise NotImplementedError()
+
+    def __gt__(self, other):
+        return self.generation < other.generation
 
 
 class Square(Function):

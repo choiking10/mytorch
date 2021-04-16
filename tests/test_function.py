@@ -110,3 +110,13 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
         xs = (x, x)
         expected_grad = np.array(2.0)
         self.backward_check(xs, expected_grad)
+
+
+class MultiPathGraphTest(unittest.TestCase):
+    def test_step16_complex_graph(self):
+        x = Variable(np.array(2.0))
+        a = F.square(x)
+        y = F.add(F.square(a), F.square(a))
+        y.backward()
+        self.assertEqual(y.data, np.array(32.0))
+        self.assertEqual(x.grad, np.array(64.0))
