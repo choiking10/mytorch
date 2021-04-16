@@ -1,3 +1,4 @@
+import weakref
 from queue import PriorityQueue
 import numpy as np
 
@@ -27,9 +28,8 @@ class Variable:
 
         while funcs.qsize() != 0:
             f = funcs.get()
-            gys = [output.grad for output in f.outputs]
+            gys = [output().grad for output in f.outputs]
             gxs = f.backward(*gys)
-            print(f.generation)
             if not isinstance(gxs, tuple):
                 gxs = (gxs,)
 
