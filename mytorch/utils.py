@@ -9,6 +9,20 @@ def as_array(x):
     return x
 
 
+def as_tuple(x):
+    if not isinstance(x, tuple):
+        return (x, )
+    return x
+
+
+def as_variable(xs):
+    if not isinstance(xs, tuple):
+        xs = (xs,)
+
+    xs = [Variable(x) for x in xs]
+
+    return xs if len(xs) > 0 else xs[0]
+
 def numerical_diff(f, x, eps=1e-4):
     """
     수치 미분 구현부
