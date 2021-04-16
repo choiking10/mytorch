@@ -4,21 +4,24 @@ from .utils import as_array
 
 
 class Function:
-    def __call__(self, inputs):
+    def __call__(self, *inputs):
         xs = [x.data for x in inputs]
-        ys = self.forward(xs)
+        ys = self.forward(*xs)
+        if not isinstance(ys, tuple):
+            ys = (ys, )
         outputs = [Variable(as_array(y)) for y in ys]
 
         for output in outputs:
             output.set_creator(self)
+
         self.inputs = inputs
         self.outputs = outputs
-        return outputs
+        return outputs if len(outputs) > 1 else outputs[0]
 
-    def forward(self, x):
+    def forward(self, *x):
         raise NotImplementedError()
 
-    def backward(self, gy):
+    def backward(self, *gy):
         raise NotImplementedError()
 
 
@@ -43,10 +46,9 @@ class Exp(Function):
 
 
 class Add(Function):
-    def forward(self, xs):
-        x0, x1 = xs
+    def forward(self, x0, x1):
         y = x0 + x1
-        return (y, )
+        return y
 
 
 def square(x):
@@ -55,3 +57,7 @@ def square(x):
 
 def exp(x):
     return Exp()(x)
+
+
+def add(x0, x1):
+    return Add()(x0, x1)
