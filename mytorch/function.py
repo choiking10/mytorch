@@ -1,5 +1,6 @@
 import weakref
 import numpy as np
+import mytorch
 from .variable import Variable
 from .utils import as_array
 
@@ -12,12 +13,13 @@ class Function:
             ys = (ys, )
         outputs = [Variable(as_array(y)) for y in ys]
 
-        self.generation = max([x.generation for x in inputs])
-        for output in outputs:
-            output.set_creator(self)
+        if mytorch.Config.enable_backprop:
+            self.generation = max([x.generation for x in inputs])
+            for output in outputs:
+                output.set_creator(self)
+            self.inputs = inputs
+            self.outputs = [weakref.ref(output) for output in outputs]
 
-        self.inputs = inputs
-        self.outputs = [weakref.ref(output) for output in outputs]
         return outputs if len(outputs) > 1 else outputs[0]
 
     def forward(self, *x):

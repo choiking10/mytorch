@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+import mytorch
 from mytorch.variable import Variable
 from mytorch.utils import numerical_diff, as_tuple, as_variable
 from mytorch import function as F
@@ -120,3 +121,16 @@ class MultiPathGraphTest(unittest.TestCase):
         y.backward()
         self.assertEqual(y.data, np.array(32.0))
         self.assertEqual(x.grad, np.array(64.0))
+
+
+class NoGradientTest(unittest.TestCase):
+    def test_step18_using_no_grad(self):
+        with mytorch.no_grad():
+            x = Variable(np.array(2.0))
+            y = F.square(x)
+            self.assertIsNone(y.creator)
+
+    def test_step18_not_using_no_grad(self):
+        x = Variable(np.array(2.0))
+        y = F.square(x)
+        self.assertIsNotNone(y.creator)
