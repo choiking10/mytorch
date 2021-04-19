@@ -43,7 +43,6 @@ class FunctionTestMixin:
         self.forward_check(*self.get_forward_input_output())
 
     def test_backward(self):
-        xs, expected_grads = self.get_backward_input_output()
         self.backward_check(*self.get_backward_input_output())
 
     # TODO: how could we test gradient check for multi input function?
@@ -125,6 +124,51 @@ class MulTest(unittest.TestCase, FunctionTestMixin):
     def get_backward_input_output(self):
         x = np.array(2), np.array(3)
         grad_y = np.array(3), np.array(2)
+        return x, grad_y
+
+
+class SubTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.sub
+
+    def get_forward_input_output(self):
+        x = np.array(2), np.array(3)
+        y = np.array(-1)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(2), np.array(3)
+        grad_y = np.array(1), np.array(-1)
+        return x, grad_y
+
+
+class DivTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.div
+
+    def get_forward_input_output(self):
+        x = np.array(8), np.array(2)
+        y = np.array(4)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(8), np.array(2)
+        grad_y = np.array(1/2), np.array(-2)
+        return x, grad_y
+
+
+class PowTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.pow
+
+    def get_forward_input_output(self):
+        x = np.array(2), np.array(3)
+        y = np.array(8)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(2), np.array(3)
+        grad_y = np.array(12)
         return x, grad_y
 
 

@@ -28,6 +28,10 @@ class Function:
     def backward(self, *gy):
         raise NotImplementedError()
 
+    def get_input_data(self):
+        ret = [x.data for x in self.inputs]
+        return ret if len(ret) > 1 else ret[0]
+
     def __gt__(self, other):
         return self.generation < other.generation
 
@@ -37,7 +41,7 @@ class Square(Function):
         return x ** 2
 
     def backward(self, gy):
-        x = self.inputs[0].data
+        x = self.get_input_data()
         gx = 2 * x * gy
         return gx
 
@@ -47,7 +51,7 @@ class Exp(Function):
         return np.exp(x)
 
     def backward(self, gy):
-        x = self.inputs[0].data
+        x = self.get_input_data()
         gx = np.exp(x) * gy
         return gx
 
@@ -67,29 +71,98 @@ class Mul(Function):
         return y
 
     def backward(self, gy):
-        x0, x1 = self.inputs[0].data, self.inputs[1].data
+        x0, x1 = self.get_input_data()
         return x1 * gy, x0 * gy
 
 
-def square(x):
-    return Square()(x)
+class Neg(Function):
+    def forward(self, x):
+        y = -x
+        return y
+
+    def backward(self, gy):
+        x = self.get_input_data()
+        return -gy
 
 
-def exp(x):
-    return Exp()(x)
+class Sub(Function):
+    def forward(self, x0, x1):
+        y = x0 - x1
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.get_input_data()
+        return gy, - gy
 
 
-def add(x0, x1):
-    x1 = as_variable(x1)
-    return Add()(x0, x1)
+class Div(Function):
+    def forward(self, x0, x1):
+        y = x0 / x1
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.get_input_data()
+        return gy / x1, - gy * x0 / (x1 ** 2)
 
 
-def mul(x0, x1):
-    x1 = as_variable(x1)
-    return Mul()(x0, x1)
+class Pow(Function):
+    def __init__(self, c):
+        if isinstance(c, Variable):
+            c = c.data
+        self.c = c
+
+    def forward(self, x):
+        y = x ** self.c
+        return y
+
+    def backward(self, gy):
+        x0 = self.get_input_data()
+        c = self.c
+        return gy * c * (x0 ** (c - 1))
+
+
+def make_function(f, params=1, is_r=False):
+    if params == 1:
+        def operator_func(x):
+            return f()(x)
+        return operator_func
+    if params == 2 and not is_r:
+        def operator_func(x0, x1):
+            x1 = as_variable(x1)
+            return f()(x0, x1)
+        return operator_func
+
+    if params == 2 and is_r:
+        def operator_func(x0, x1):
+            x1 = as_variable(x1)
+            return f()(x1, x0)
+        return operator_func
+
+    raise NotImplementedError()
+
+
+square = make_function(Square)
+exp = make_function(Exp)
+add = make_function(Add, 2)
+mul = make_function(Mul, 2)
+neg = make_function(Neg)
+sub = make_function(Sub, 2)
+rsub = make_function(Sub, 2, True)
+div = make_function(Div, 2)
+rdiv = make_function(Div, 2, True)
+
+
+def pow(x, c):
+    return Pow(c)(x)
 
 
 Variable.__add__ = add
 Variable.__mul__ = mul
 Variable.__radd__ = add
 Variable.__rmul__ = mul
+Variable.__neg__ = neg
+Variable.__sub__ = sub
+Variable.__rsub__ = rsub
+Variable.__truediv__ = div
+Variable.__rturediv__ = rdiv
+Variable.__pow__ = pow
