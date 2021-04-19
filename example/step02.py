@@ -1,7 +1,6 @@
 import numpy as np
 
-from mytorch.function import Square
-from mytorch.variable import Variable
+from mytorch.simple_core import Variable, Square
 
 x = Variable(np.array(0))
 f = Square()

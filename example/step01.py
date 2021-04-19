@@ -1,5 +1,5 @@
 import numpy as np
-from mytorch.variable import Variable
+from mytorch.simple_core import Variable
 
 data = np.array(1.0)
 x = Variable(data)

@@ -1,11 +1,12 @@
 import numpy as np
 
-from mytorch import function as F
-from mytorch.variable import Variable
+import mytorch.simple_core
 
-A = F.Square()
-B = F.Exp()
-C = F.Square()
+from mytorch.simple_core import Variable
+
+A = mytorch.simple_core.Square()
+B = mytorch.simple_core.Exp()
+C = mytorch.simple_core.Square()
 
 # y = (e^{x^2})^2
 # 계산 그래프의 연결 x -> A -> a -> B -> b -> C -> y

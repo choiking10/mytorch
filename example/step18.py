@@ -3,8 +3,8 @@ import contextlib
 import numpy as np
 
 import mytorch
-from mytorch.function import add, square
-from mytorch.variable import Variable
+import mytorch.simple_core
+from mytorch.simple_core import Variable, square, add
 
 
 def ex1():
@@ -31,7 +31,7 @@ def ex2():
 
 
 def ex3():
-    with mytorch.no_grad():
+    with mytorch.simple_core.no_grad():
         x = Variable(np.array(2.0))
         y = square(x)
         print("no_grad generation", y.creator)

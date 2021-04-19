@@ -1,30 +1,4 @@
-import numpy as np
-
-from mytorch.variable import Variable
-
-
-def as_array(x):
-    if np.isscalar(x):
-        return np.array(x)
-    return x
-
-
-def as_tuple(x):
-    if not isinstance(x, tuple):
-        return (x, )
-    return x
-
-
-def as_variable(xs):
-    old_type = type(xs)
-    if not isinstance(xs, tuple):
-        xs = (xs,)
-    if isinstance(xs, list):
-        xs = tuple(xs)
-    xs = [as_array(x) if not isinstance(x, Variable) and not isinstance(x, np.ndarray) else x for x in xs]
-    xs = [Variable(x) if not isinstance(x, Variable) else x for x in xs]
-
-    return old_type(xs) if len(xs) > 1 else xs[0]
+from mytorch.simple_core import Variable
 
 
 def numerical_diff(f, x, eps=1e-4):
@@ -43,3 +17,9 @@ def numerical_diff(f, x, eps=1e-4):
     y0 = f(x0)
     y1 = f(x1)
     return (y1.data - y0.data) / (2 * eps)
+
+
+def as_tuple(x):
+    if not isinstance(x, tuple):
+        return (x, )
+    return x

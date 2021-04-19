@@ -1,7 +1,6 @@
 import numpy as np
 
-from mytorch.function import add
-from mytorch.variable import Variable
+from mytorch.simple_core import Variable, add
 
 
 def ex1():
