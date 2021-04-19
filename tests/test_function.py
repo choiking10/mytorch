@@ -28,12 +28,12 @@ class FunctionTestMixin:
         y.backward()
 
     def forward_check(self, xs, expected_y):
-        xs = as_variable(xs)
+        xs = as_tuple(as_variable(xs))
         y = self.forward(*xs)
         self.assertEqual(y.data, expected_y)
 
     def backward_check(self, xs, expected_grads):
-        xs = as_variable(xs)
+        xs = as_tuple(as_variable(xs))
         expected_grads = as_tuple(expected_grads)
         self.forward_and_backward(*xs)
         for x, expected_grad in zip(xs, expected_grads):
@@ -111,6 +111,39 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
         xs = (x, x)
         expected_grad = np.array(2.0)
         self.backward_check(xs, expected_grad)
+
+
+class MulTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.mul
+
+    def get_forward_input_output(self):
+        x = np.array(2), np.array(3)
+        y = np.array(6)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(2), np.array(3)
+        grad_y = np.array(3), np.array(2)
+        return x, grad_y
+
+
+class OverloadingTest(unittest.TestCase):
+    def test_step20_overloading(self):
+        a, b, c = as_variable((np.array(3), np.array(4), np.array(5)))
+        y = (a + b) * c
+        self.assertEqual(y.data, np.array(35))
+        y.backward()
+        self.assertEqual(c.grad, np.array(7))
+        self.assertEqual(a.grad, np.array(5))
+        self.assertEqual(b.grad, np.array(5))
+
+    def test_step21_overloading(self):
+        a = Variable(np.array(3))
+        y = 5.0 * (a + 4.0)
+        self.assertEqual(y.data, np.array(35))
+        y.backward()
+        self.assertEqual(a.grad, np.array(5))
 
 
 class MultiPathGraphTest(unittest.TestCase):

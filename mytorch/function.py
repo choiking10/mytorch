@@ -2,7 +2,7 @@ import weakref
 import numpy as np
 import mytorch
 from .variable import Variable
-from .utils import as_array
+from .utils import as_array, as_variable
 
 
 class Function:
@@ -61,6 +61,16 @@ class Add(Function):
         return gy, gy
 
 
+class Mul(Function):
+    def forward(self, x0, x1):
+        y = x0 * x1
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.inputs[0].data, self.inputs[1].data
+        return x1 * gy, x0 * gy
+
+
 def square(x):
     return Square()(x)
 
@@ -70,4 +80,16 @@ def exp(x):
 
 
 def add(x0, x1):
+    x1 = as_variable(x1)
     return Add()(x0, x1)
+
+
+def mul(x0, x1):
+    x1 = as_variable(x1)
+    return Mul()(x0, x1)
+
+
+Variable.__add__ = add
+Variable.__mul__ = mul
+Variable.__radd__ = add
+Variable.__rmul__ = mul
