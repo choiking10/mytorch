@@ -4,7 +4,7 @@ import numpy as np
 
 import mytorch
 from mytorch import as_variable, Variable
-from mytorch.utils import as_tuple
+from mytorch.utils import as_tuple, numerical_gradient
 
 
 class FunctionTestMixin:
@@ -26,17 +26,27 @@ class FunctionTestMixin:
         y = self.forward(*xs)
         y.backward()
 
-    def forward_check(self, xs, expected_y):
-        xs = as_tuple(as_variable(xs))
+    def forward_check(self, xs, expected_y, using_allclose=False):
+        if not isinstance(xs, list) and not isinstance(xs, tuple):
+            xs = (xs, )
+        xs = list(map(as_variable, xs))
         y = self.forward(*xs)
-        self.assertEqual(y.data, expected_y)
+        if using_allclose:
+            self.assertTrue(np.allclose(y.data, expected_y))
+        else:
+            self.assertEqual(y.data, expected_y)
 
-    def backward_check(self, xs, expected_grads):
-        xs = as_tuple(as_variable(xs))
+    def backward_check(self, xs, expected_grads, using_allclose=False):
+        xs = list(map(as_variable, as_tuple(xs)))
         expected_grads = as_tuple(expected_grads)
         self.forward_and_backward(*xs)
-        for x, expected_grad in zip(xs, expected_grads):
-            self.assertEqual(x.grad, expected_grad)
+
+        if using_allclose:
+            for x, expected_grad in zip(xs, expected_grads):
+                self.assertTrue(np.allclose(x.grad, expected_grad))
+        else:
+            for x, expected_grad in zip(xs, expected_grads):
+                self.assertEqual(x.grad, expected_grad)
 
     def test_forward(self):
         self.forward_check(*self.get_forward_input_output())
@@ -63,18 +73,10 @@ class FunctionTestMixin:
         self.binary_operator_check(f, v1, v2.data, forward_expect, v1_backward_expect, None)
         self.binary_operator_check(f, v1.data, v2, forward_expect, None, v2_backward_expect)
 
-    # TODO: how could we test gradient check for multi input function?
-    # def test_gradient_check(self):
-    #     input_shape = self.get_forward_input_output()
-    #     xs = Variable(np.random.rand(1))
-    #
-    #     xs = as_variable(xs)
-    #     expected_grads = as_tuple(expected_grads)
-    #     self.forward_and_backward(*xs)
-    #
-    #     num_grad = numerical_diff(f, x)
-    #     flg = np.allclose(x.grad, num_grad)
-    #     self.assertTrue(flg)
+    def numerical_gradient_check(self, *var_shape_list):
+        var_list = [as_variable(np.random.rand(var_shape)) for var_shape in var_shape_list]
+        expected_grads = numerical_gradient(self.get_function(), *var_list)
+        self.backward_check(var_list, expected_grads, using_allclose=True)
 
 
 class SquareTest(unittest.TestCase, FunctionTestMixin):
@@ -86,6 +88,9 @@ class SquareTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         return np.array(3.0), np.array(6.0)
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1)
 
 
 class ExpTest(unittest.TestCase, FunctionTestMixin):
@@ -101,6 +106,9 @@ class ExpTest(unittest.TestCase, FunctionTestMixin):
         x = np.array(3.0)
         grad_y = np.array(np.exp(x))
         return x, grad_y
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1)
 
 
 class AddTest(unittest.TestCase, FunctionTestMixin):
@@ -130,8 +138,11 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
         self.backward_check(xs, expected_grad)
 
     def test_overloading(self):
-        a, b = as_variable((2, 3))
+        a, b = map(as_variable, (2, 3))
         self.binary_operator_overloading_check(lambda x0, x1: x0+x1, a, b, 5, 1, 1)
+
+    def test_gradient_check(self):
+        self.numerical_gradient_check(1, 1)
 
 
 class MulTest(unittest.TestCase, FunctionTestMixin):
@@ -149,8 +160,11 @@ class MulTest(unittest.TestCase, FunctionTestMixin):
         return x, grad_y
 
     def test_overloading(self):
-        a, b = as_variable((2, 3))
+        a, b = map(as_variable, (2, 3))
         self.binary_operator_overloading_check(lambda x0, x1: x0*x1, a, b, 6, 3, 2)
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1, 1)
 
 
 class SubTest(unittest.TestCase, FunctionTestMixin):
@@ -168,8 +182,11 @@ class SubTest(unittest.TestCase, FunctionTestMixin):
         return x, grad_y
 
     def test_overloading(self):
-        a, b = as_variable((2, 3))
+        a, b =map(as_variable, (2, 3))
         self.binary_operator_overloading_check(lambda x0, x1: x0-x1, a, b, -1, 1, -1)
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1, 1)
 
 
 class DivTest(unittest.TestCase, FunctionTestMixin):
@@ -187,8 +204,11 @@ class DivTest(unittest.TestCase, FunctionTestMixin):
         return x, grad_y
 
     def test_overloading(self):
-        a, b = as_variable((8, 2))
+        a, b = map(as_variable, (8, 2))
         self.binary_operator_overloading_check(lambda x0, x1: x0/x1, a, b, 4.0, 1/2, -2)
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1, 1)
 
 
 class PowTest(unittest.TestCase, FunctionTestMixin):
@@ -208,7 +228,7 @@ class PowTest(unittest.TestCase, FunctionTestMixin):
 
 class OverloadingTest(unittest.TestCase):
     def test_step20_overloading(self):
-        a, b, c = as_variable((np.array(3), np.array(4), np.array(5)))
+        a, b, c = map(as_variable, [3, 4, 5])
         y = (a + b) * c
         self.assertEqual(y.data, np.array(35))
         y.backward()

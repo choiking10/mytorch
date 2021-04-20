@@ -135,15 +135,9 @@ def as_array(x):
 
 
 def as_variable(xs):
-    old_type = type(xs)
-    if not isinstance(xs, tuple):
-        xs = (xs,)
-    if isinstance(xs, list):
-        xs = tuple(xs)
-    xs = [as_array(x) if not isinstance(x, Variable) and not isinstance(x, np.ndarray) else x for x in xs]
-    xs = [Variable(x) if not isinstance(x, Variable) else x for x in xs]
-
-    return old_type(xs) if len(xs) > 1 else xs[0]
+    if isinstance(xs, Variable):
+        return xs
+    return Variable(as_array(xs))
 
 
 class Square(Function):
