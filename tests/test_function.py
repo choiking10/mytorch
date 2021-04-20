@@ -5,6 +5,7 @@ import numpy as np
 import mytorch
 from mytorch import as_variable, Variable
 from mytorch.utils import as_tuple, numerical_gradient
+from tests import complex_functions
 
 
 class FunctionTestMixin:
@@ -104,8 +105,8 @@ class ExpTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         x = np.array(3.0)
-        grad_y = np.array(np.exp(x))
-        return x, grad_y
+        grad = np.array(np.exp(x))
+        return x, grad
 
     def test_numerical_check(self):
         self.numerical_gradient_check(1)
@@ -122,8 +123,8 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         x = np.array(2), np.array(3)
-        grad_y = np.array(1), np.array(1)
-        return x, grad_y
+        grad = np.array(1), np.array(1)
+        return x, grad
 
     def test_step14_forward_same_variable(self):
         x = Variable(np.array(3.0))
@@ -156,8 +157,8 @@ class MulTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         x = np.array(2), np.array(3)
-        grad_y = np.array(3), np.array(2)
-        return x, grad_y
+        grad = np.array(3), np.array(2)
+        return x, grad
 
     def test_overloading(self):
         a, b = map(as_variable, (2, 3))
@@ -178,8 +179,8 @@ class SubTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         x = np.array(2), np.array(3)
-        grad_y = np.array(1), np.array(-1)
-        return x, grad_y
+        grad = np.array(1), np.array(-1)
+        return x, grad
 
     def test_overloading(self):
         a, b =map(as_variable, (2, 3))
@@ -200,8 +201,8 @@ class DivTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         x = np.array(8), np.array(2)
-        grad_y = np.array(1/2), np.array(-2)
-        return x, grad_y
+        grad = np.array(1/2), np.array(-2)
+        return x, grad
 
     def test_overloading(self):
         a, b = map(as_variable, (8, 2))
@@ -222,8 +223,8 @@ class PowTest(unittest.TestCase, FunctionTestMixin):
 
     def get_backward_input_output(self):
         x = np.array(2), np.array(3)
-        grad_y = np.array(12)
-        return x, grad_y
+        grad = np.array(12)
+        return x, grad
 
 
 class OverloadingTest(unittest.TestCase):
@@ -258,3 +259,48 @@ class NoGradientTest(unittest.TestCase):
         x = Variable(np.array(2.0))
         y = mytorch.simple_core.square(x)
         self.assertIsNotNone(y.creator)
+
+
+class SphereFunctionTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return complex_functions.sphere
+
+    def get_forward_input_output(self):
+        xs = 1, 1
+        y = complex_functions.sphere(*xs)
+        return xs, y
+
+    def get_backward_input_output(self):
+        xs = 1, 1
+        grad = 2, 2
+        return xs, grad
+
+
+class MatyasFunctionTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return complex_functions.matyas
+
+    def get_forward_input_output(self):
+        xs = 1, 1
+        y = self.get_function()(*xs)
+        return xs, y
+
+    def get_backward_input_output(self):
+        xs = 1, 1
+        grad = 0.040000000000000036, 0.040000000000000036
+        return xs, grad
+
+
+class GoldsteinFunctionTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return complex_functions.goldstein
+
+    def get_forward_input_output(self):
+        xs = 1, 1
+        y = self.get_function()(*xs)
+        return xs, y
+
+    def get_backward_input_output(self):
+        xs = 1, 1
+        grad = -5376.0, 8064.0
+        return xs, grad
