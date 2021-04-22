@@ -11,11 +11,12 @@ implementation of DeZero (deep learning from scratch-3)
  - [x] heap q 를 이용한 generation 정렬  
 
 
-## 고지별 (2/5)
+## 고지별 (3/5)
   - [고지 1](https://github.com/choiking10/mytorch/tree/chapter1)
   - [고지 2](https://github.com/choiking10/mytorch/tree/chapter2)
+  - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
 
-## Dezero 구현하기 진행도 Step 별 (24/60)
+## Dezero 구현하기 진행도 Step 별 (28/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -37,3 +38,6 @@ implementation of DeZero (deep learning from scratch-3)
   - [step22](https://github.com/choiking10/mytorch/tree/step22)
   - [step23](https://github.com/choiking10/mytorch/tree/step23)
   - [step24](https://github.com/choiking10/mytorch/tree/step24)
+  - [step26](https://github.com/choiking10/mytorch/tree/step26)
+  - [step27](https://github.com/choiking10/mytorch/tree/step27)
+  - [step28](https://github.com/choiking10/mytorch/tree/step28)
