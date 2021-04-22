@@ -6,4 +6,6 @@ from mytorch.simple_core import as_array
 from mytorch.simple_core import as_variable
 from mytorch.simple_core import setup_variable
 
+from . import utils
+
 setup_variable()
