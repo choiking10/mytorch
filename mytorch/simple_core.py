@@ -134,7 +134,7 @@ def as_array(x):
     return x
 
 
-def as_variable(xs):
+def as_variable(xs) -> Variable:
     if isinstance(xs, Variable):
         return xs
     return Variable(as_array(xs))
