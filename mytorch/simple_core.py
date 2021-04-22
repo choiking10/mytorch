@@ -225,6 +225,25 @@ class Pow(Function):
         return gy * c * (x0 ** (c - 1))
 
 
+class Sin(Function):
+    def forward(self, x):
+        y = np.sin(x)
+        return y
+
+    def backward(self, gy):
+        x = self.get_input_data()
+        return gy * np.cos(x)
+
+
+class Cos(Function):
+    def forward(self, x):
+        y = np.cos(x)
+        return y
+
+    def backward(self, gy):
+        x = self.get_input_data()
+        return gy * -np.sin(x)
+
 
 def square(x):
     return Square()(x)
@@ -270,6 +289,14 @@ def rdiv(x0, x1):
 
 def pow(x, c):
     return Pow(c)(x)
+
+
+def sin(x):
+    return Sin()(x)
+
+
+def cos(x):
+    return Cos()(x)
 
 
 def setup_variable():

@@ -227,6 +227,42 @@ class PowTest(unittest.TestCase, FunctionTestMixin):
         return x, grad
 
 
+class SinTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return mytorch.simple_core.sin
+
+    def get_forward_input_output(self):
+        x = np.array(2.0)
+        y = np.sin(x)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(3.0)
+        grad = np.cos(x)
+        return x, grad
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1)
+
+
+class CosTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return mytorch.simple_core.cos
+
+    def get_forward_input_output(self):
+        x = np.array(2.0)
+        y = np.cos(x)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(3.0)
+        grad = -np.sin(x)
+        return x, grad
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1)
+
+
 class OverloadingTest(unittest.TestCase):
     def test_step20_overloading(self):
         a, b, c = map(as_variable, [3, 4, 5])
