@@ -50,6 +50,10 @@ class Function:
         ret = [x.data for x in self.inputs]
         return ret if len(ret) > 1 else ret[0]
 
+    def get_output_data(self):
+        ret = [x().data for x in self.outputs]
+        return ret if len(ret) > 1 else ret[0]
+
     def __gt__(self, other):
         return self.generation < other.generation
 
@@ -69,7 +73,7 @@ class Variable:
         self.creator = func
         self.generation = func.generation + 1
 
-    def backward(self, retain_grad=False):
+    def backward(self, retain_grad=False, create_graph=False):
         if self.grad is None:
             self.grad = np.ones_like(self.data)
 
@@ -81,19 +85,20 @@ class Variable:
         while funcs.qsize() != 0:
             f = funcs.get()
             gys = [output().grad for output in f.outputs]
-            gxs = f.backward(*gys)
-            if not isinstance(gxs, tuple):
-                gxs = (gxs,)
+            with using_config('enable_backprop', create_graph):
+                gxs = f.backward(*gys)
+                if not isinstance(gxs, tuple):
+                    gxs = (gxs,)
 
-            for x, gx in zip(f.inputs, gxs):
-                if x.grad is None:
-                    x.grad = gx
-                else:
-                    x.grad = x.grad + gx
+                for x, gx in zip(f.inputs, gxs):
+                    if x.grad is None:
+                        x.grad = gx
+                    else:
+                        x.grad = x.grad + gx
 
-                if x.creator is not None and x.creator not in seen_set:
-                    funcs.put(x.creator)
-                    seen_set.add(x.creator)
+                    if x.creator is not None and x.creator not in seen_set:
+                        funcs.put(x.creator)
+                        seen_set.add(x.creator)
             if not retain_grad:
                 for y in f.outputs:
                     y().grad = None
@@ -225,26 +230,6 @@ class Pow(Function):
         return gy * c * (x0 ** (c - 1))
 
 
-class Sin(Function):
-    def forward(self, x):
-        y = np.sin(x)
-        return y
-
-    def backward(self, gy):
-        x = self.get_input_data()
-        return gy * np.cos(x)
-
-
-class Cos(Function):
-    def forward(self, x):
-        y = np.cos(x)
-        return y
-
-    def backward(self, gy):
-        x = self.get_input_data()
-        return gy * -np.sin(x)
-
-
 def square(x):
     return Square()(x)
 
@@ -289,14 +274,6 @@ def rdiv(x0, x1):
 
 def pow(x, c):
     return Pow(c)(x)
-
-
-def sin(x):
-    return Sin()(x)
-
-
-def cos(x):
-    return Cos()(x)
 
 
 def setup_variable():

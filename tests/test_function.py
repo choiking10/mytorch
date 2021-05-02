@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 
 import mytorch
+import mytorch.functions as F
 from mytorch import as_variable, Variable
 from mytorch.utils import as_tuple, numerical_gradient
 from tests import complex_functions
@@ -44,7 +45,7 @@ class FunctionTestMixin:
 
         if using_allclose:
             for x, expected_grad in zip(xs, expected_grads):
-                self.assertTrue(np.allclose(x.grad, expected_grad))
+                self.assertAllClose(x.grad, expected_grad)
         else:
             for x, expected_grad in zip(xs, expected_grads):
                 self.assertEqual(x.grad, expected_grad)
@@ -78,6 +79,9 @@ class FunctionTestMixin:
         var_list = [as_variable(np.random.rand(var_shape)) for var_shape in var_shape_list]
         expected_grads = numerical_gradient(self.get_function(), *var_list)
         self.backward_check(var_list, expected_grads, using_allclose=True)
+
+    def assertAllClose(self, v, expected):
+        self.assertTrue(np.allclose(v, expected), f"expected {expected}, but {v}")
 
 
 class SquareTest(unittest.TestCase, FunctionTestMixin):
@@ -229,7 +233,7 @@ class PowTest(unittest.TestCase, FunctionTestMixin):
 
 class SinTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.sin
+        return F.sin
 
     def get_forward_input_output(self):
         x = np.array(2.0)
@@ -247,7 +251,7 @@ class SinTest(unittest.TestCase, FunctionTestMixin):
 
 class CosTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.cos
+        return F.cos
 
     def get_forward_input_output(self):
         x = np.array(2.0)
@@ -257,6 +261,25 @@ class CosTest(unittest.TestCase, FunctionTestMixin):
     def get_backward_input_output(self):
         x = np.array(3.0)
         grad = -np.sin(x)
+        return x, grad
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1)
+
+
+class TanhTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.tanh
+
+    def get_forward_input_output(self):
+        x = np.array(2.0)
+        y = np.tanh(x)
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(3.0)
+        y = np.tanh(x)
+        grad = 1 - y * y
         return x, grad
 
     def test_numerical_check(self):
