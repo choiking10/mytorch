@@ -66,3 +66,15 @@ def reshape(x: np.ndarray or Variable, shape):
         return as_variable(x)
     else:
         return Reshape(shape)(x)
+
+
+class Transpose(Function):
+    def forward(self, x: np.ndarray):
+        return x.transpose()
+
+    def backward(self, gy: Variable):
+        return transpose(gy)
+
+
+def transpose(x):
+    return Transpose()(x)

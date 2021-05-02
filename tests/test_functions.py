@@ -77,3 +77,18 @@ class ReshapeTest(unittest.TestCase, FunctionTestMixin):
         x = as_variable(np.array([[1, 2, 3], [4, 5, 6]])), (6,)
         grad = np.array([[1, 1, 1], [1, 1, 1]])
         return x, grad
+
+
+class TransposeTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.transpose
+
+    def get_forward_input_output(self):
+        x = np.array([[1, 2, 3], [4, 5, 6]])
+        y = np.array([[1, 4], [2, 5], [3, 6]])
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array([[1, 2, 3], [4, 5, 6]])
+        grad = np.array([[1, 1, 1], [1, 1, 1]])
+        return x, grad

@@ -54,4 +54,5 @@ implementation of DeZero (deep learning from scratch-3)
   - ~~step35~~ (Newton's method)
   - ~~step36~~ (Newton's method)
   - [step37 - 텐서를 다루다](https://github.com/choiking10/mytorch/tree/step37)
+  - [step38 - 형상 변환 함수 (고차미분 적용)](https://github.com/choiking10/mytorch/tree/step38)
   

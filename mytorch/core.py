@@ -104,6 +104,12 @@ class Variable:
             shape = shape[0]
         return mytorch.functions.reshape(self, shape)
 
+    def transpose(self):
+        return mytorch.functions.transpose(self)
+
+    @property
+    def T(self):
+        return self.transpose()
 
 class Function:
     def __call__(self, *inputs):
