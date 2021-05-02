@@ -7,5 +7,6 @@ from mytorch.simple_core import as_variable
 from mytorch.simple_core import setup_variable
 
 from . import utils
+from . import functions
 
 setup_variable()

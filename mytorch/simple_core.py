@@ -1,8 +1,10 @@
+from typing import List
 import contextlib
 import weakref
 from queue import PriorityQueue
 
 import numpy as np
+import mytorch
 
 
 class Config:
@@ -21,41 +23,6 @@ def using_config(name, value):
 
 def no_grad():
     return using_config('enable_backprop', False)
-
-
-class Function:
-    def __call__(self, *inputs):
-        xs = [x.data for x in inputs]
-        ys = self.forward(*xs)
-        if not isinstance(ys, tuple):
-            ys = (ys, )
-        outputs = [Variable(as_array(y)) for y in ys]
-
-        if Config.enable_backprop:
-            self.generation = max([x.generation for x in inputs])
-            for output in outputs:
-                output.set_creator(self)
-            self.inputs = inputs
-            self.outputs = [weakref.ref(output) for output in outputs]
-
-        return outputs if len(outputs) > 1 else outputs[0]
-
-    def forward(self, *x):
-        raise NotImplementedError()
-
-    def backward(self, *gy):
-        raise NotImplementedError()
-
-    def get_input_data(self):
-        ret = [x.data for x in self.inputs]
-        return ret if len(ret) > 1 else ret[0]
-
-    def get_output_data(self):
-        ret = [x().data for x in self.outputs]
-        return ret if len(ret) > 1 else ret[0]
-
-    def __gt__(self, other):
-        return self.generation < other.generation
 
 
 class Variable:
@@ -131,6 +98,46 @@ class Variable:
         else:
             p = str(self.data).replace('\n', '\n' + ' ' * 9)
         return f'variable({p})'
+
+    def reshape(self, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = shape[0]
+        return mytorch.functions.reshape(self, shape)
+
+
+class Function:
+    def __call__(self, *inputs):
+        xs = [x.data for x in inputs]
+        ys = self.forward(*xs)
+        if not isinstance(ys, tuple):
+            ys = (ys, )
+        outputs = [Variable(as_array(y)) for y in ys]
+
+        if Config.enable_backprop:
+            self.generation = max([x.generation for x in inputs])
+            for output in outputs:
+                output.set_creator(self)
+            self.inputs = inputs
+            self.outputs = [weakref.ref(output) for output in outputs]
+
+        return outputs if len(outputs) > 1 else outputs[0]
+
+    def forward(self, *x: Variable):
+        raise NotImplementedError()
+
+    def backward(self, *gy: Variable):
+        raise NotImplementedError()
+
+    def get_input_data(self) -> List[Variable] or Variable:
+        ret = [x.data for x in self.inputs]
+        return ret if len(ret) > 1 else ret[0]
+
+    def get_output_data(self) -> List[Variable] or Variable:
+        ret = [x().data for x in self.outputs]
+        return ret if len(ret) > 1 else ret[0]
+
+    def __gt__(self, other):
+        return self.generation < other.generation
 
 
 def as_array(x):

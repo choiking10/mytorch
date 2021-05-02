@@ -1,5 +1,5 @@
 import unittest
-from tests.test_function import FunctionTestMixin
+from tests.utils import FunctionTestMixin
 from tests import complex_functions
 
 
