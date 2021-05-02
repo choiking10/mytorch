@@ -12,7 +12,7 @@ from tests.utils import FunctionTestMixin
 
 class SquareTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.square
+        return mytorch.core.square
 
     def get_forward_input_output(self):
         return np.array(2.0), np.array(4.0)
@@ -26,7 +26,7 @@ class SquareTest(unittest.TestCase, FunctionTestMixin):
 
 class ExpTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.exp
+        return mytorch.core.exp
 
     def get_forward_input_output(self):
         x = np.array(2.0)
@@ -44,7 +44,7 @@ class ExpTest(unittest.TestCase, FunctionTestMixin):
 
 class AddTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.add
+        return mytorch.core.add
 
     def get_forward_input_output(self):
         x = np.array(2), np.array(3)
@@ -78,7 +78,7 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
 
 class MulTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.mul
+        return mytorch.core.mul
 
     def get_forward_input_output(self):
         x = np.array(2), np.array(3)
@@ -100,7 +100,7 @@ class MulTest(unittest.TestCase, FunctionTestMixin):
 
 class SubTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.sub
+        return mytorch.core.sub
 
     def get_forward_input_output(self):
         x = np.array(2), np.array(3)
@@ -122,7 +122,7 @@ class SubTest(unittest.TestCase, FunctionTestMixin):
 
 class DivTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.div
+        return mytorch.core.div
 
     def get_forward_input_output(self):
         x = np.array(8), np.array(2)
@@ -144,7 +144,7 @@ class DivTest(unittest.TestCase, FunctionTestMixin):
 
 class PowTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
-        return mytorch.simple_core.pow
+        return mytorch.core.pow
 
     def get_forward_input_output(self):
         x = np.array(2), np.array(3)
@@ -157,92 +157,37 @@ class PowTest(unittest.TestCase, FunctionTestMixin):
         return x, grad
 
 
-class SinTest(unittest.TestCase, FunctionTestMixin):
-    def get_function(self):
-        return F.sin
-
-    def get_forward_input_output(self):
-        x = np.array(2.0)
-        y = np.sin(x)
-        return x, y
-
-    def get_backward_input_output(self):
-        x = np.array(3.0)
-        grad = np.cos(x)
-        return x, grad
-
-    def test_numerical_check(self):
-        self.numerical_gradient_check(1)
-
-
-class CosTest(unittest.TestCase, FunctionTestMixin):
-    def get_function(self):
-        return F.cos
-
-    def get_forward_input_output(self):
-        x = np.array(2.0)
-        y = np.cos(x)
-        return x, y
-
-    def get_backward_input_output(self):
-        x = np.array(3.0)
-        grad = -np.sin(x)
-        return x, grad
-
-    def test_numerical_check(self):
-        self.numerical_gradient_check(1)
-
-
-class TanhTest(unittest.TestCase, FunctionTestMixin):
-    def get_function(self):
-        return F.tanh
-
-    def get_forward_input_output(self):
-        x = np.array(2.0)
-        y = np.tanh(x)
-        return x, y
-
-    def get_backward_input_output(self):
-        x = np.array(3.0)
-        y = np.tanh(x)
-        grad = 1 - y * y
-        return x, grad
-
-    def test_numerical_check(self):
-        self.numerical_gradient_check(1)
-
-
 class OverloadingTest(unittest.TestCase):
     def test_step20_overloading(self):
         a, b, c = map(as_variable, [3, 4, 5])
         y = (a + b) * c
         self.assertEqual(y.data, np.array(35))
         y.backward()
-        self.assertEqual(c.grad, np.array(7))
-        self.assertEqual(a.grad, np.array(5))
-        self.assertEqual(b.grad, np.array(5))
+        self.assertEqual(c.grad.data, np.array(7))
+        self.assertEqual(a.grad.data, np.array(5))
+        self.assertEqual(b.grad.data, np.array(5))
 
 
 class MultiPathGraphTest(unittest.TestCase):
     def test_step16_complex_graph(self):
         x = Variable(np.array(2.0))
-        a = mytorch.simple_core.square(x)
-        y = mytorch.simple_core.add(mytorch.simple_core.square(a), mytorch.simple_core.square(a))
+        a = mytorch.core.square(x)
+        y = mytorch.core.add(mytorch.core.square(a), mytorch.core.square(a))
         y.backward()
         self.assertEqual(y.data, np.array(32.0))
-        self.assertEqual(x.grad, np.array(64.0))
+        self.assertEqual(x.grad.data, np.array(64.0))
 
 
 class NoGradientTest(unittest.TestCase):
     def test_step18_using_no_grad(self):
-        with mytorch.simple_core.no_grad():
+        with mytorch.core.no_grad():
             x = Variable(np.array(2.0))
-            y = mytorch.simple_core.square(x)
+            y = mytorch.core.square(x)
             self.assertIsNone(y.creator)
 
     def test_step18_not_using_no_grad(self):
         x = Variable(np.array(2.0))
-        y = mytorch.simple_core.square(x)
+        y = mytorch.core.square(x)
         self.assertIsNotNone(y.creator)
 
 

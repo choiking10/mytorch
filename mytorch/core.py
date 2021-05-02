@@ -42,7 +42,7 @@ class Variable:
 
     def backward(self, retain_grad=False, create_graph=False):
         if self.grad is None:
-            self.grad = np.ones_like(self.data)
+            self.grad = as_variable(np.ones_like(self.data))
 
         seen_set = set()
         funcs = PriorityQueue()
@@ -111,7 +111,7 @@ class Function:
         ys = self.forward(*xs)
         if not isinstance(ys, tuple):
             ys = (ys, )
-        outputs = [Variable(as_array(y)) for y in ys]
+        outputs = [as_variable(y) for y in ys]
 
         if Config.enable_backprop:
             self.generation = max([x.generation for x in inputs])
@@ -122,7 +122,7 @@ class Function:
 
         return outputs if len(outputs) > 1 else outputs[0]
 
-    def forward(self, *x: Variable):
+    def forward(self, *x: np.ndarray):
         raise NotImplementedError()
 
     def backward(self, *gy: Variable):
@@ -133,7 +133,7 @@ class Function:
         return ret if len(ret) > 1 else ret[0]
 
     def get_output_data(self) -> List[Variable] or Variable:
-        ret = [x().data for x in self.outputs]
+        ret = [x() for x in self.outputs]
         return ret if len(ret) > 1 else ret[0]
 
     def __gt__(self, other):
@@ -157,7 +157,7 @@ class Square(Function):
         return x ** 2
 
     def backward(self, gy):
-        x = self.get_input_data()
+        x = as_variable(self.get_input_data())
         gx = 2 * x * gy
         return gx
 
@@ -167,8 +167,8 @@ class Exp(Function):
         return np.exp(x)
 
     def backward(self, gy):
-        x = self.get_input_data()
-        gx = np.exp(x) * gy
+        x = as_variable(self.get_input_data())
+        gx = exp(x) * gy
         return gx
 
 
@@ -187,7 +187,7 @@ class Mul(Function):
         return y
 
     def backward(self, gy):
-        x0, x1 = self.get_input_data()
+        x0, x1 = map(as_variable, self.get_input_data())
         return x1 * gy, x0 * gy
 
 
@@ -197,7 +197,6 @@ class Neg(Function):
         return y
 
     def backward(self, gy):
-        x = self.get_input_data()
         return -gy
 
 
@@ -207,7 +206,6 @@ class Sub(Function):
         return y
 
     def backward(self, gy):
-        x0, x1 = self.get_input_data()
         return gy, - gy
 
 
@@ -217,14 +215,14 @@ class Div(Function):
         return y
 
     def backward(self, gy):
-        x0, x1 = self.get_input_data()
+        x0, x1 = map(as_variable, self.get_input_data())
         return gy / x1, - gy * x0 / (x1 ** 2)
 
 
 class Pow(Function):
     def __init__(self, c):
         if isinstance(c, Variable):
-            c = c.data
+            c = np.asscalar(c.data)
         self.c = c
 
     def forward(self, x):
@@ -232,52 +230,9 @@ class Pow(Function):
         return y
 
     def backward(self, gy):
-        x0 = self.get_input_data()
+        x0 = as_variable(self.get_input_data())
         c = self.c
         return gy * c * (x0 ** (c - 1))
-
-
-class Sin(Function):
-    def forward(self, x):
-        y = np.sin(x)
-        return y
-
-    def backward(self, gy):
-        x = self.get_input_data()
-        return gy * np.cos(x)
-
-
-def sin(x):
-    return Sin()(x)
-
-
-class Cos(Function):
-    def forward(self, x):
-        y = np.cos(x)
-        return y
-
-    def backward(self, gy):
-        x = self.get_input_data()
-        return gy * -np.sin(x)
-
-
-def cos(x):
-    return Cos()(x)
-
-
-class Tanh(Function):
-    def forward(self, x):
-        y = np.tanh(x)
-        return y
-
-    def backward(self, gy):
-        y = self.get_output_data()
-        gx = gy * (1 - y * y)
-        return gx
-
-
-def tanh(x):
-    return Tanh()(x)
 
 
 def square(x):

@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 
 import mytorch.functions as F
+from mytorch import as_variable
 from tests.utils import FunctionTestMixin
 
 
@@ -59,3 +60,20 @@ class TanhTest(unittest.TestCase, FunctionTestMixin):
 
     def test_numerical_check(self):
         self.numerical_gradient_check(1)
+
+
+class ReshapeTest(unittest.TestCase, FunctionTestMixin):
+    do_as_variable = False
+
+    def get_function(self):
+        return F.reshape
+
+    def get_forward_input_output(self):
+        x = as_variable(np.array([[1, 2, 3], [4, 5, 6]])), (6,)
+        y = np.array([1, 2, 3, 4, 5, 6])
+        return x, y
+
+    def get_backward_input_output(self):
+        x = as_variable(np.array([[1, 2, 3], [4, 5, 6]])), (6,)
+        grad = np.array([[1, 1, 1], [1, 1, 1]])
+        return x, grad

@@ -5,6 +5,8 @@ from mytorch.utils import as_tuple, numerical_gradient
 
 
 class FunctionTestMixin:
+    do_as_variable = True
+
     def get_function(self):
         raise NotImplementedError()
 
@@ -26,24 +28,26 @@ class FunctionTestMixin:
     def forward_check(self, xs, expected_y, using_allclose=False):
         if not isinstance(xs, list) and not isinstance(xs, tuple):
             xs = (xs, )
-        xs = list(map(as_variable, xs))
+        if self.do_as_variable:
+            xs = list(map(as_variable, xs))
         y = self.forward(*xs)
         if using_allclose:
-            self.assertTrue(np.allclose(y.data, expected_y))
+            self.assertAllClose(y.data, expected_y)
         else:
-            self.assertEqual(y.data, expected_y)
+            np.testing.assert_array_equal(y.data, expected_y)
 
     def backward_check(self, xs, expected_grads, using_allclose=False):
-        xs = list(map(as_variable, as_tuple(xs)))
+        if self.do_as_variable:
+            xs = list(map(as_variable, as_tuple(xs)))
         expected_grads = as_tuple(expected_grads)
         self.forward_and_backward(*xs)
 
         if using_allclose:
             for x, expected_grad in zip(xs, expected_grads):
-                self.assertAllClose(x.grad, expected_grad)
+                self.assertAllClose(x.grad.data, expected_grad)
         else:
             for x, expected_grad in zip(xs, expected_grads):
-                self.assertEqual(x.grad, expected_grad)
+                np.testing.assert_array_equal(x.grad.data, expected_grad)
 
     def test_forward(self):
         self.forward_check(*self.get_forward_input_output())
@@ -58,10 +62,10 @@ class FunctionTestMixin:
         if v1_backward_expect:
             # if not isinstance(v1_backward_expect, np.ndarray):
             #     v1_backward_expect = np.ndarray(v1_backward_expect)
-            self.assertEqual(v1.grad, v1_backward_expect)
+            self.assertEqual(v1.grad.data, v1_backward_expect)
             v1.zerograd()
         if v2_backward_expect:
-            self.assertEqual(v2.grad, v2_backward_expect)
+            self.assertEqual(v2.grad.data, v2_backward_expect)
             v2.zerograd()
 
     def binary_operator_overloading_check(self, f, v1, v2, forward_expect,
@@ -76,4 +80,4 @@ class FunctionTestMixin:
         self.backward_check(var_list, expected_grads, using_allclose=True)
 
     def assertAllClose(self, v, expected):
-        self.assertTrue(np.allclose(v, expected), f"expected {expected}, but {v}")
+        np.testing.assert_allclose(v, expected)
