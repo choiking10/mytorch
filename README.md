@@ -11,6 +11,10 @@ implementation of DeZero (deep learning from scratch-3)
  - [x] heap q 를 이용한 generation 정렬  
 
 
+## Blogging 거리
+ - [ ] 텐서 사용 시의 역전파 방법에 따른 계산 효율 (자동미분 forward 모드와 reverse 모드)
+
+
 ## 고지별 (3/5)
   - [고지 1](https://github.com/choiking10/mytorch/tree/chapter1)
   - [고지 2](https://github.com/choiking10/mytorch/tree/chapter2)
@@ -49,3 +53,5 @@ implementation of DeZero (deep learning from scratch-3)
   - ~~step34~~ (Newton's method)
   - ~~step35~~ (Newton's method)
   - ~~step36~~ (Newton's method)
+  - [step37 - 텐서를 다루다](https://github.com/choiking10/mytorch/tree/step37)
+  
