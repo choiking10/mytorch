@@ -1,6 +1,7 @@
 import numpy as np
 
 from mytorch import Function
+from mytorch import as_variable, Variable
 
 
 class Sin(Function):
@@ -10,7 +11,7 @@ class Sin(Function):
 
     def backward(self, gy):
         x = self.get_input_data()
-        return gy * np.cos(x)
+        return gy * cos(x)
 
 
 def sin(x):
@@ -24,7 +25,7 @@ class Cos(Function):
 
     def backward(self, gy):
         x = self.get_input_data()
-        return gy * -np.sin(x)
+        return gy * -sin(x)
 
 
 def cos(x):
@@ -37,7 +38,7 @@ class Tanh(Function):
         return y
 
     def backward(self, gy):
-        y = self.get_output_data()
+        y = as_variable(self.get_output_data())
         gx = gy * (1 - y * y)
         return gx
 
@@ -45,3 +46,23 @@ class Tanh(Function):
 def tanh(x):
     return Tanh()(x)
 
+
+class Reshape(Function):
+    def __init__(self, shape):
+        self.shape = shape
+        self.x_shape = None
+
+    def forward(self, x: np.ndarray):
+        self.x_shape = x.shape
+        y = x.reshape(self.shape)
+        return y
+
+    def backward(self, gy: np.ndarray):
+        return reshape(gy, self.x_shape)
+
+
+def reshape(x: np.ndarray or Variable, shape):
+    if x.shape == shape:
+        return as_variable(x)
+    else:
+        return Reshape(shape)(x)

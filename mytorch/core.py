@@ -107,6 +107,8 @@ class Variable:
 
 class Function:
     def __call__(self, *inputs):
+        inputs = [as_variable(x) for x in inputs]
+
         xs = [x.data for x in inputs]
         ys = self.forward(*xs)
         if not isinstance(ys, tuple):
@@ -129,8 +131,7 @@ class Function:
         raise NotImplementedError()
 
     def get_input_data(self) -> List[Variable] or Variable:
-        ret = [x.data for x in self.inputs]
-        return ret if len(ret) > 1 else ret[0]
+        return self.inputs if len(self.inputs) > 1 else self.inputs[0]
 
     def get_output_data(self) -> List[Variable] or Variable:
         ret = [x() for x in self.outputs]
@@ -157,7 +158,7 @@ class Square(Function):
         return x ** 2
 
     def backward(self, gy):
-        x = as_variable(self.get_input_data())
+        x = self.get_input_data()
         gx = 2 * x * gy
         return gx
 
@@ -167,7 +168,7 @@ class Exp(Function):
         return np.exp(x)
 
     def backward(self, gy):
-        x = as_variable(self.get_input_data())
+        x = self.get_input_data()
         gx = exp(x) * gy
         return gx
 
@@ -187,7 +188,7 @@ class Mul(Function):
         return y
 
     def backward(self, gy):
-        x0, x1 = map(as_variable, self.get_input_data())
+        x0, x1 = self.get_input_data()
         return x1 * gy, x0 * gy
 
 
@@ -215,14 +216,14 @@ class Div(Function):
         return y
 
     def backward(self, gy):
-        x0, x1 = map(as_variable, self.get_input_data())
+        x0, x1 = self.get_input_data()
         return gy / x1, - gy * x0 / (x1 ** 2)
 
 
 class Pow(Function):
     def __init__(self, c):
         if isinstance(c, Variable):
-            c = np.asscalar(c.data)
+            c = c.data.item()
         self.c = c
 
     def forward(self, x):
@@ -230,7 +231,7 @@ class Pow(Function):
         return y
 
     def backward(self, gy):
-        x0 = as_variable(self.get_input_data())
+        x0 = self.get_input_data()
         c = self.c
         return gy * c * (x0 ** (c - 1))
 
