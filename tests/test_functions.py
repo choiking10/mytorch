@@ -92,3 +92,22 @@ class TransposeTest(unittest.TestCase, FunctionTestMixin):
         x = np.array([[1, 2, 3], [4, 5, 6]])
         grad = np.array([[1, 1, 1], [1, 1, 1]])
         return x, grad
+
+
+class SumTest(unittest.TestCase, FunctionTestMixin):
+    do_as_variable = False
+    def get_function(self):
+        return F.sum
+
+    def get_forward_input_output(self):
+        x = as_variable(np.array([[1, 2, 3], [4, 5, 6]])), 0, True
+        y = np.array([[5, 7, 9]])
+        return x, y
+
+    def get_backward_input_output(self):
+        x = as_variable(np.array([[1, 2, 3], [4, 5, 6]])), 0, True
+        grad = np.array([[1, 1, 1], [1, 1, 1]])
+        return x, grad
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check((4, 10))

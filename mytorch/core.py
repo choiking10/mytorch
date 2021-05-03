@@ -136,10 +136,10 @@ class Function:
     def backward(self, *gy: Variable):
         raise NotImplementedError()
 
-    def get_input_data(self) -> List[Variable] or Variable:
+    def get_input_data(self) -> Variable or List[Variable]:
         return self.inputs if len(self.inputs) > 1 else self.inputs[0]
 
-    def get_output_data(self) -> List[Variable] or Variable:
+    def get_output_data(self) -> Variable or List[Variable]:
         ret = [x() for x in self.outputs]
         return ret if len(ret) > 1 else ret[0]
 
