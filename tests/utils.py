@@ -75,7 +75,7 @@ class FunctionTestMixin:
         self.binary_operator_check(f, v1.data, v2, forward_expect, None, v2_backward_expect)
 
     def numerical_gradient_check(self, *var_shape_list):
-        var_list = [as_variable(0.5+np.random.rand(var_shape)/2) for var_shape in var_shape_list]
+        var_list = [as_variable(0.5+np.random.rand(*as_tuple(var_shape))/2) for var_shape in var_shape_list]
         expected_grads = numerical_gradient(self.get_function(), *var_list)
         self.backward_check(var_list, expected_grads, using_allclose=True)
 

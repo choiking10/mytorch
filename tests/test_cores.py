@@ -75,6 +75,9 @@ class AddTest(unittest.TestCase, FunctionTestMixin):
     def test_gradient_check(self):
         self.numerical_gradient_check(1, 1)
 
+    def test_gradient_broadcast_check(self):
+        self.numerical_gradient_check((2, 3), (2, 1))
+
 
 class MulTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
@@ -96,6 +99,9 @@ class MulTest(unittest.TestCase, FunctionTestMixin):
 
     def test_numerical_check(self):
         self.numerical_gradient_check(1, 1)
+
+    def test_gradient_broadcast_check(self):
+        self.numerical_gradient_check((2, 3), (2, 1))
 
 
 class SubTest(unittest.TestCase, FunctionTestMixin):
@@ -119,6 +125,9 @@ class SubTest(unittest.TestCase, FunctionTestMixin):
     def test_numerical_check(self):
         self.numerical_gradient_check(1, 1)
 
+    def test_gradient_broadcast_check(self):
+        self.numerical_gradient_check((2, 3), (2, 1))
+
 
 class DivTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
@@ -140,6 +149,9 @@ class DivTest(unittest.TestCase, FunctionTestMixin):
 
     def test_numerical_check(self):
         self.numerical_gradient_check(1, 1)
+
+    def test_gradient_broadcast_check(self):
+        self.numerical_gradient_check((2, 3), (2, 1))
 
 
 class PowTest(unittest.TestCase, FunctionTestMixin):

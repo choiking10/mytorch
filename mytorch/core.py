@@ -185,7 +185,13 @@ class Add(Function):
         return y
 
     def backward(self, gy):
-        return gy, gy
+        x0, x1 = self.get_input_data()
+
+        gx0, gx1 = gy, gy
+        if x0.shape != x1.shape:
+            gx0 = mytorch.functions.sum_to(gx0, x0.shape)
+            gx1 = mytorch.functions.sum_to(gx1, x1.shape)
+        return gx0, gx1
 
 
 class Mul(Function):
@@ -195,7 +201,11 @@ class Mul(Function):
 
     def backward(self, gy):
         x0, x1 = self.get_input_data()
-        return x1 * gy, x0 * gy
+        gx0, gx1 = x1 * gy, x0 * gy
+        if x0.shape != x1.shape:
+            gx0 = mytorch.functions.sum_to(gx0, x0.shape)
+            gx1 = mytorch.functions.sum_to(gx1, x1.shape)
+        return gx0, gx1
 
 
 class Neg(Function):
@@ -213,7 +223,12 @@ class Sub(Function):
         return y
 
     def backward(self, gy):
-        return gy, - gy
+        x0, x1 = self.get_input_data()
+        gx0, gx1 = gy, -gy
+        if x0.shape != x1.shape:
+            gx0 = mytorch.functions.sum_to(gx0, x0.shape)
+            gx1 = mytorch.functions.sum_to(gx1, x1.shape)
+        return gx0, gx1
 
 
 class Div(Function):
@@ -223,7 +238,11 @@ class Div(Function):
 
     def backward(self, gy):
         x0, x1 = self.get_input_data()
-        return gy / x1, - gy * x0 / (x1 ** 2)
+        gx0, gx1 = gy / x1, - gy * x0 / (x1 ** 2)
+        if x0.shape != x1.shape:
+            gx0 = mytorch.functions.sum_to(gx0, x0.shape)
+            gx1 = mytorch.functions.sum_to(gx1, x1.shape)
+        return gx0, gx1
 
 
 class Pow(Function):
