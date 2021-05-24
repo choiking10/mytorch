@@ -139,3 +139,19 @@ class Sum(Function):
 
 def sum(x, axis=None, keepdims=False):
     return Sum(axis, keepdims)(x)
+
+
+class MatMul(Function):
+    def forward(self, x: np.ndarray, W: np.ndarray):
+        y = x.dot(W)
+        return y
+
+    def backward(self, gy: Variable):
+        x, W = self.get_input_data()
+        gx = matmul(gy, W.T)
+        gW = matmul(x.T, gy)
+        return gx, gW
+
+
+def matmul(x, W):
+    return MatMul()(x, W)

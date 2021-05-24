@@ -111,3 +111,25 @@ class SumTest(unittest.TestCase, FunctionTestMixin):
 
     def test_numerical_check(self):
         self.numerical_gradient_check((4, 10))
+
+
+class MatmulTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.matmul
+
+    def get_forward_input_output(self):
+        x = np.array([[1, 2, 3], [4, 5, 6]])
+        W = np.array([[1, 4], [2, 5], [3, 6]])
+        res = np.array([[14, 32], [32, 77]])
+        return (x, W), res
+
+    def get_backward_input_output(self):
+        x = np.array([[1, 2, 3], [4, 5, 6]])
+        W = np.array([[1, 4], [2, 5], [3, 6]])
+
+        grad_x = np.array([[5, 7, 9], [5, 7, 9]])
+        grad_W = np.array([[5, 5], [7, 7], [9, 9]])
+        return (x, W), (grad_x, grad_W)
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check((3, 4), (4, 2))
