@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 
 import mytorch
-import mytorch.functions as F
 from mytorch import as_variable, Variable
 
 from tests import complex_functions

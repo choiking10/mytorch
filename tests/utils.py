@@ -4,16 +4,10 @@ from mytorch import as_variable
 from mytorch.utils import as_tuple, numerical_gradient
 
 
-class FunctionTestMixin:
+class ForwardAndBackwardCheckMixin:
     do_as_variable = True
 
     def get_function(self):
-        raise NotImplementedError()
-
-    def get_forward_input_output(self):
-        raise NotImplementedError()
-
-    def get_backward_input_output(self):
         raise NotImplementedError()
 
     def forward(self, *xs):
@@ -27,7 +21,7 @@ class FunctionTestMixin:
 
     def forward_check(self, xs, expected_y, using_allclose=False):
         if not isinstance(xs, list) and not isinstance(xs, tuple):
-            xs = (xs, )
+            xs = (xs,)
         if self.do_as_variable:
             xs = list(map(as_variable, xs))
         y = self.forward(*xs)
@@ -49,11 +43,14 @@ class FunctionTestMixin:
             for x, expected_grad in zip(xs, expected_grads):
                 np.testing.assert_array_equal(x.grad.data, expected_grad)
 
-    def test_forward(self):
-        self.forward_check(*self.get_forward_input_output())
+    def assertAllClose(self, v, expected):
+        np.testing.assert_allclose(v, expected)
 
-    def test_backward(self):
-        self.backward_check(*self.get_backward_input_output())
+    def numerical_gradient_check(self, *var_shape_list):
+        var_list = [as_variable(0.5 + np.random.rand(*as_tuple(var_shape)) / 2) for var_shape in var_shape_list]
+        expected_grads = numerical_gradient(self.get_function(), *var_list)
+        self.backward_check(var_list, expected_grads, using_allclose=True)
+
 
     def binary_operator_check(self, f, v1, v2, forward_expect, v1_backward_expect=None, v2_backward_expect=None):
         y = f(v1, v2)
@@ -74,10 +71,17 @@ class FunctionTestMixin:
         self.binary_operator_check(f, v1, v2.data, forward_expect, v1_backward_expect, None)
         self.binary_operator_check(f, v1.data, v2, forward_expect, None, v2_backward_expect)
 
-    def numerical_gradient_check(self, *var_shape_list):
-        var_list = [as_variable(0.5+np.random.rand(*as_tuple(var_shape))/2) for var_shape in var_shape_list]
-        expected_grads = numerical_gradient(self.get_function(), *var_list)
-        self.backward_check(var_list, expected_grads, using_allclose=True)
 
-    def assertAllClose(self, v, expected):
-        np.testing.assert_allclose(v, expected)
+class FunctionTestMixin(ForwardAndBackwardCheckMixin):
+
+    def get_forward_input_output(self):
+        raise NotImplementedError()
+
+    def get_backward_input_output(self):
+        raise NotImplementedError()
+
+    def test_forward(self):
+        self.forward_check(*self.get_forward_input_output())
+
+    def test_backward(self):
+        self.backward_check(*self.get_backward_input_output())

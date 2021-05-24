@@ -4,7 +4,7 @@ import numpy as np
 
 import mytorch.functions as F
 from mytorch import as_variable
-from tests.utils import FunctionTestMixin
+from tests.utils import FunctionTestMixin, ForwardAndBackwardCheckMixin
 
 
 class SinTest(unittest.TestCase, FunctionTestMixin):
@@ -133,3 +133,11 @@ class MatmulTest(unittest.TestCase, FunctionTestMixin):
 
     def test_numerical_check(self):
         self.numerical_gradient_check((3, 4), (4, 2))
+
+
+class MeanSquaredError(unittest.TestCase, ForwardAndBackwardCheckMixin):
+    def get_function(self):
+        return F.mean_squared_error
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check((100, 1), (100, 1))
