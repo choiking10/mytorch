@@ -135,9 +135,29 @@ class MatmulTest(unittest.TestCase, FunctionTestMixin):
         self.numerical_gradient_check((3, 4), (4, 2))
 
 
-class MeanSquaredError(unittest.TestCase, ForwardAndBackwardCheckMixin):
+class MeanSquaredErrorTest(unittest.TestCase, ForwardAndBackwardCheckMixin):
     def get_function(self):
         return F.mean_squared_error
 
     def test_numerical_check(self):
         self.numerical_gradient_check((100, 1), (100, 1))
+
+
+class LinearTest(unittest.TestCase, ForwardAndBackwardCheckMixin):
+    def get_function(self):
+        return F.linear
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check((3, 4), (4, 2), (3, 2))
+
+    def test_numerical_check_none(self):
+        self.numerical_gradient_check((3, 4), (4, 2))
+
+
+class SigmoidTest(unittest.TestCase, ForwardAndBackwardCheckMixin):
+    def get_function(self):
+        return F.sigmoid
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check((3, 3))
+

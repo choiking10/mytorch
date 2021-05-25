@@ -12,7 +12,13 @@ implementation of DeZero (deep learning from scratch-3)
 
 
 ## Blogging 거리
+ - [ ] 쉽게 내가 짠 backward 함수를 검증해볼 수 있을까? 
+   - numerical_gradient_check를 활용한 접근법
  - [ ] 텐서 사용 시의 역전파 방법에 따른 계산 효율 (자동미분 forward 모드와 reverse 모드)
+ - [ ] broadcast 함수의 역전파는 어떻게 이루어질까?
+ - [ ] 행렬의 곱연산의 미분을 해보자.  
+ - [ ] 왜 직접 구현해서 사용하는 것보다, pytorch에서 제공해주는 모듈을 쓰는게 좋을까? (메모리 관점에서의 접근)
+   - step43의 내용 활용해서 블로그하면 좋을 듯
 
 
 ## 고지별 (3/5)
@@ -20,7 +26,7 @@ implementation of DeZero (deep learning from scratch-3)
   - [고지 2](https://github.com/choiking10/mytorch/tree/chapter2)
   - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
 
-## Dezero 구현하기 진행도 Step 별 (42/60)
+## Dezero 구현하기 진행도 Step 별 (43/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -51,3 +57,4 @@ implementation of DeZero (deep learning from scratch-3)
   - [step39 - 합계(Sum) 함수](https://github.com/choiking10/mytorch/tree/step39)
   - [stag41 - 행렬의 곱](https://github.com/choiking10/mytorch/tree/step41)
   - [step42 - 선형회귀](https://github.com/choiking10/mytorch/tree/step42)
+  - [step43 - 신경망](https://github.com/choiking10/mytorch/tree/step43)

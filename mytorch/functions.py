@@ -1,6 +1,6 @@
 import numpy as np
 
-from mytorch import Function
+from mytorch import Function, core
 from mytorch import as_variable, Variable
 from mytorch import utils
 
@@ -173,3 +173,48 @@ class MeanSquaredError(Function):
 
 def mean_squared_error(x0, x1):
     return MeanSquaredError()(x0, x1)
+
+
+class Linear(Function):
+    def forward(self, x: np.ndarray, W: np.ndarray, b: np.ndarray):
+        y = np.dot(x, W)
+        if b is not None:
+            y = y + b
+        return y
+
+    def backward(self, gy: Variable):
+        x, W, b = self.get_input_data()
+        gx = matmul(gy, W.T)
+        gW = matmul(x.T, gy)
+        gb = sum_to(gy, b.shape) if b.data is not None else None
+        return gx, gW, gb
+
+
+def linear(x, W, b=None):
+    return Linear()(x, W, b)
+
+
+def linear_simple(x, W, b=None):
+    t = matmul(x, W)
+    if b is None:
+        return t
+
+    y = t + b
+
+    # t의 데이터는 + 연산시 역전파에 필요하지 않음.
+    # matmul의 역전파 시 x, W, b 만 사용 따라서 t의 data는 필요하지 않음.
+    t.data = None
+    return y
+
+
+class Sigmoid(Function):
+    def forward(self, x: np.ndarray):
+        return 1 / (1 + np.exp(-x))
+
+    def backward(self, gy: Variable):
+        y = self.get_output_data()
+        return gy * y * (1 - y)
+
+
+def sigmoid(x):
+    return Sigmoid()(x)
