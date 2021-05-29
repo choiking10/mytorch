@@ -111,6 +111,7 @@ class Variable:
     def T(self):
         return self.transpose()
 
+
 class Function:
     def __call__(self, *inputs):
         inputs = [as_variable(x) for x in inputs]
@@ -145,6 +146,10 @@ class Function:
 
     def __gt__(self, other):
         return self.generation < other.generation
+
+
+class Parameter(Variable):
+    pass
 
 
 def as_array(x):

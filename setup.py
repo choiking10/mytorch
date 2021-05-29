@@ -15,7 +15,7 @@ setup(name='mytorch',
       author_email='choiking10@gmail.com',
       description='Implementation of DeZero (deep learning from scratch-3)',
       packages=find_packages(exclude=['tests', 'steps']),
-      long_description=open('README.md').read(),
+      long_description=open('README.md', encoding="utf-8").read(),
       zip_safe=False,
       setup_requires=['numpy>=1.19.5'],
       test_suite='setup.test_suite')
