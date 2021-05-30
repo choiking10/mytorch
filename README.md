@@ -19,14 +19,16 @@ implementation of DeZero (deep learning from scratch-3)
  - [ ] 행렬의 곱연산의 미분을 해보자.  
  - [ ] 왜 직접 구현해서 사용하는 것보다, pytorch에서 제공해주는 모듈을 쓰는게 좋을까? (메모리 관점에서의 접근)
    - step43의 내용 활용해서 블로그하면 좋을 듯
-
+ - [ ] Optimizer와 관련된 내용도 포스팅할 만 할듯 
+   - 왜 optimizer도 save해야 하는가?
+   - Optimizer의 작동원리 등등
 
 ## 고지별 (3/5)
   - [고지 1](https://github.com/choiking10/mytorch/tree/chapter1)
   - [고지 2](https://github.com/choiking10/mytorch/tree/chapter2)
   - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
 
-## Dezero 구현하기 진행도 Step 별 (45/60)
+## Dezero 구현하기 진행도 Step 별 (46/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -60,3 +62,4 @@ implementation of DeZero (deep learning from scratch-3)
   - [step43 - 신경망](https://github.com/choiking10/mytorch/tree/step43)
   - [step44 - 매개변수를 모아두는 계층](https://github.com/choiking10/mytorch/tree/step44)
   - [step45 - 계층를 모아두는 계층](https://github.com/choiking10/mytorch/tree/step45)
+  - [step46 - Optimizer로 수행하는 매개변수 갱신](https://github.com/choiking10/mytorch/tree/step46)

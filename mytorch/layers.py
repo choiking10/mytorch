@@ -39,6 +39,10 @@ class Layer:
         for param in self.params():
             param.zerograd()
 
+    @property
+    def parameters(self):
+        return [p for p in self.params()]
+
 
 class Linear(Layer):
     def __init__(self, out_size, nobias =False, dtype=np.float32, in_size=None):
