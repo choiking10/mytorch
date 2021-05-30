@@ -18,7 +18,11 @@ else:
     from mytorch.core import as_array
     from mytorch.core import as_variable
     from mytorch.core import setup_variable
-    from . import utils
-    from . import functions
+
+    from mytorch import utils
+    from mytorch import functions
+    from mytorch.layers import Layer
+    from mytorch.models import Model
+
 
 setup_variable()
