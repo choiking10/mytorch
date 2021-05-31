@@ -44,13 +44,12 @@ class ForwardAndBackwardCheckMixin:
                 np.testing.assert_array_equal(x.grad.data, expected_grad)
 
     def assertAllClose(self, v, expected):
-        np.testing.assert_allclose(v, expected)
+        np.testing.assert_allclose(v, expected, atol=0.0001)
 
     def numerical_gradient_check(self, *var_shape_list):
         var_list = [as_variable(0.5 + np.random.rand(*as_tuple(var_shape)) / 2) for var_shape in var_shape_list]
         expected_grads = numerical_gradient(self.get_function(), *var_list)
         self.backward_check(var_list, expected_grads, using_allclose=True)
-
 
     def binary_operator_check(self, f, v1, v2, forward_expect, v1_backward_expect=None, v2_backward_expect=None):
         y = f(v1, v2)

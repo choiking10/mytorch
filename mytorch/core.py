@@ -174,16 +174,6 @@ class Square(Function):
         return gx
 
 
-class Exp(Function):
-    def forward(self, x):
-        return np.exp(x)
-
-    def backward(self, gy):
-        x = self.get_input_data()
-        gx = exp(x) * gy
-        return gx
-
-
 class Add(Function):
     def forward(self, x0, x1):
         y = x0 + x1
@@ -270,10 +260,6 @@ def square(x):
     return Square()(x)
 
 
-def exp(x):
-    return Exp()(x)
-
-
 def add(x0, x1):
     x1 = as_variable(x1)
     return Add()(x0, x1)
@@ -323,3 +309,4 @@ def setup_variable():
     Variable.__truediv__ = div
     Variable.__rtruediv__ = rdiv
     Variable.__pow__ = pow
+    Variable.__getitem__ = mytorch.functions.get_item

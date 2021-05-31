@@ -161,3 +161,11 @@ class SigmoidTest(unittest.TestCase, ForwardAndBackwardCheckMixin):
     def test_numerical_check(self):
         self.numerical_gradient_check((3, 3))
 
+
+class SoftmaxTest(unittest.TestCase, ForwardAndBackwardCheckMixin):
+    def get_function(self):
+        return F.softmax
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check((1, 10))
+
