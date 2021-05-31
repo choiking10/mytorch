@@ -7,6 +7,25 @@ from mytorch import as_variable
 from tests.utils import FunctionTestMixin, ForwardAndBackwardCheckMixin
 
 
+
+class ExpTest(unittest.TestCase, FunctionTestMixin):
+    def get_function(self):
+        return F.exp
+
+    def get_forward_input_output(self):
+        x = np.array(2.0)
+        y = np.array(np.exp(x))
+        return x, y
+
+    def get_backward_input_output(self):
+        x = np.array(3.0)
+        grad = np.array(np.exp(x))
+        return x, grad
+
+    def test_numerical_check(self):
+        self.numerical_gradient_check(1)
+
+
 class SinTest(unittest.TestCase, FunctionTestMixin):
     def get_function(self):
         return F.sin
