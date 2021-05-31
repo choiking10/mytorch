@@ -22,6 +22,7 @@ else:
     from mytorch import utils
     from mytorch import functions
     from mytorch import optimizers
+    from mytorch import datasets
     from mytorch.layers import Layer
     from mytorch.models import Model
 
