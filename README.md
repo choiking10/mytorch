@@ -28,7 +28,7 @@ implementation of DeZero (deep learning from scratch-3)
   - [고지 2](https://github.com/choiking10/mytorch/tree/chapter2)
   - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
 
-## Dezero 구현하기 진행도 Step 별 (49/60)
+## Dezero 구현하기 진행도 Step 별 (50/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -67,4 +67,5 @@ implementation of DeZero (deep learning from scratch-3)
   - [step48 - 다중 클래스 분류](https://github.com/choiking10/mytorch/tree/step48)
     - 데이터 시각화 코드 추가
   - [step49 -Dataset 클래스와 전처리](https://github.com/choiking10/mytorch/tree/step49)
+  - [step50 -미니배치를 뽑아주는 DataLoader](https://github.com/choiking10/mytorch/tree/step50)
     

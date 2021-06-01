@@ -25,6 +25,8 @@ else:
     from mytorch import datasets
     from mytorch.layers import Layer
     from mytorch.models import Model
+    from mytorch.datasets import Dataset
+    from mytorch.dataloaders import DataLoader
 
 
 setup_variable()
