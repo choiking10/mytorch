@@ -313,9 +313,26 @@ class SoftmaxCrossEntropy(Function):
 def softmax_cross_entropy(x, t):
     return SoftmaxCrossEntropy()(x, t)
 
+
 def accuracy(y, t):
     y, t = as_variable(y), as_variable(t)
 
     pred = y.data.argmax(axis=1).reshape(t.shape)
     acc = (pred == t.data).mean()
     return Variable(mytorch.core.as_array(acc))
+
+
+class ReLU(Function):
+    def forward(self, x):
+        y = np.maximum(x, 0.0)
+        return y
+
+    def backward(self, gy):
+        x = self.get_input_data()
+        mask = x.data > 0
+        gx = gy * mask
+        return gx
+
+
+def relu(x):
+    return ReLU()(x)

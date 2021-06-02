@@ -23,12 +23,13 @@ implementation of DeZero (deep learning from scratch-3)
    - 왜 optimizer도 save해야 하는가?
    - Optimizer의 작동원리 등등
 
-## 고지별 (3/5)
+## 고지별 (4/5)
   - [고지 1](https://github.com/choiking10/mytorch/tree/chapter1)
   - [고지 2](https://github.com/choiking10/mytorch/tree/chapter2)
   - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
+  - [고지 4](https://github.com/choiking10/mytorch/tree/chapter4)
 
-## Dezero 구현하기 진행도 Step 별 (50/60)
+## Dezero 구현하기 진행도 Step 별 (51/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -66,6 +67,6 @@ implementation of DeZero (deep learning from scratch-3)
   - [step47 - 소프트맥스 함수와 교차 엔트로피 오차](https://github.com/choiking10/mytorch/tree/step47)
   - [step48 - 다중 클래스 분류](https://github.com/choiking10/mytorch/tree/step48)
     - 데이터 시각화 코드 추가
-  - [step49 -Dataset 클래스와 전처리](https://github.com/choiking10/mytorch/tree/step49)
-  - [step50 -미니배치를 뽑아주는 DataLoader](https://github.com/choiking10/mytorch/tree/step50)
-    
+  - [step49 - Dataset 클래스와 전처리](https://github.com/choiking10/mytorch/tree/step49)
+  - [step50 - 미니배치를 뽑아주는 DataLoader](https://github.com/choiking10/mytorch/tree/step50)
+  - [step51 - MNIST 학습](https://github.com/choiking10/mytorch/tree/step51)
