@@ -17,5 +17,5 @@ setup(name='mytorch',
       packages=find_packages(exclude=['tests', 'steps']),
       long_description=open('README.md', encoding="utf-8").read(),
       zip_safe=False,
-      setup_requires=['numpy>=1.19.5'],
+      setup_requires=['numpy>=1.19.5', 'matplotlib>=3.3.4'],
       test_suite='setup.test_suite')
