@@ -5,6 +5,13 @@
 implementation of DeZero (deep learning from scratch-3)
 
 
+## notebook 실행
+```console
+docker build . -t mytorch
+docker run --gpus all -it --rm -v $PWD:/workspace -p 8000:8000 mytorch \
+           jupyter notebook --allow-root --ip 0.0.0.0 --port 8000
+```
+
 ## Dezero 외의 추가 구현한 부분
  - [x] 각종 테스트 코드 추가  
  - [x] CI 툴을 이용한 빌드 및 테스트 자동화  
