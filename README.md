@@ -8,8 +8,8 @@ implementation of DeZero (deep learning from scratch-3)
 ## notebook 실행
 ```console
 docker build . -t mytorch
-docker run --gpus all -it --rm -v $PWD:/workspace -p 8000:8000 mytorch \
-           jupyter notebook --allow-root --ip 0.0.0.0 --port 8000
+docker run --gpus all -it --rm -v $PWD:/workspace -p 8001:8001 mytorch \
+           jupyter notebook --allow-root --ip 0.0.0.0 --port 8001
 ```
 
 ## Dezero 외의 추가 구현한 부분
@@ -36,7 +36,7 @@ docker run --gpus all -it --rm -v $PWD:/workspace -p 8000:8000 mytorch \
   - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
   - [고지 4](https://github.com/choiking10/mytorch/tree/chapter4)
 
-## Dezero 구현하기 진행도 Step 별 (51/60)
+## Dezero 구현하기 진행도 Step 별 (52/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -77,3 +77,4 @@ docker run --gpus all -it --rm -v $PWD:/workspace -p 8000:8000 mytorch \
   - [step49 - Dataset 클래스와 전처리](https://github.com/choiking10/mytorch/tree/step49)
   - [step50 - 미니배치를 뽑아주는 DataLoader](https://github.com/choiking10/mytorch/tree/step50)
   - [step51 - MNIST 학습](https://github.com/choiking10/mytorch/tree/step51)
+  - [step52 - GPU 지원](https://github.com/choiking10/mytorch/tree/step52)

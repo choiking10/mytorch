@@ -25,10 +25,17 @@ def no_grad():
     return using_config('enable_backprop', False)
 
 
+try:
+    import cupy
+    array_types = (np.ndarray, cupy.ndarray)
+except ImportError:
+    array_types = np.ndarray
+
+
 class Variable:
     def __init__(self, data, name=None):
         if data is not None:
-            if not isinstance(data, np.ndarray):
+            if not isinstance(data, array_types):
                 raise TypeError(f'{type(data)} is not supported.')
         self.data = data
         self.name = name
@@ -42,7 +49,8 @@ class Variable:
 
     def backward(self, retain_grad=False, create_graph=False):
         if self.grad is None:
-            self.grad = as_variable(np.ones_like(self.data))
+            xp = mytorch.cuda.get_array_module(self.data)
+            self.grad = as_variable(xp.ones_like(self.data))
 
         seen_set = set()
         funcs = PriorityQueue()
@@ -111,6 +119,14 @@ class Variable:
     def T(self):
         return self.transpose()
 
+    def to_cpu(self):
+        if self.data is not None:
+            self.data = mytorch.cuda.as_numpy(self.data)
+
+    def to_gpu(self):
+        if self.data is not None:
+            self.data = mytorch.cuda.as_cupy(self.data)
+
 
 class Function:
     def __call__(self, *inputs):
@@ -152,9 +168,9 @@ class Parameter(Variable):
     pass
 
 
-def as_array(x):
+def as_array(x, array_module=np):
     if np.isscalar(x):
-        return np.array(x)
+        return array_module.array(x)
     return x
 
 
@@ -261,12 +277,12 @@ def square(x):
 
 
 def add(x0, x1):
-    x1 = as_variable(x1)
+    x1 = as_array(x1, mytorch.cuda.get_array_module(x0.data))
     return Add()(x0, x1)
 
 
 def mul(x0, x1):
-    x1 = as_variable(x1)
+    x1 = as_array(x1, mytorch.cuda.get_array_module(x0.data))
     return Mul()(x0, x1)
 
 
@@ -275,22 +291,22 @@ def neg(x):
 
 
 def sub(x0, x1):
-    x1 = as_variable(x1)
+    x1 = as_array(x1, mytorch.cuda.get_array_module(x0.data))
     return Sub()(x0, x1)
 
 
 def rsub(x0, x1):
-    x1 = as_variable(x1)
+    x1 = as_array(x1, mytorch.cuda.get_array_module(x0.data))
     return Sub()(x1, x0)
 
 
 def div(x0, x1):
-    x1 = as_variable(x1)
+    x1 = as_array(x1, mytorch.cuda.get_array_module(x0.data))
     return Div()(x0, x1)
 
 
 def rdiv(x0, x1):
-    x1 = as_variable(x1)
+    x1 = as_array(x1, mytorch.cuda.get_array_module(x0.data))
     return Div()(x1, x0)
 
 

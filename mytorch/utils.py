@@ -2,20 +2,21 @@ import os
 import subprocess
 import urllib.request
 
-import numpy as np
+from mytorch import cuda
 
 
 def numerical_gradient(f, *args, eps=1e-4):
     grads = []
     for X in args:
-        grad = np.zeros_like(X.data)
-        for idx, x in np.ndenumerate(X.data):
+        xp = cuda.get_array_module(X.data)
+        grad = xp.zeros_like(X.data)
+        for idx, x in xp.ndenumerate(X.data):
             X.data[idx] = x - eps
             y0 = f(*args)
             X.data[idx] = x + eps
             y1 = f(*args)
             X.data[idx] = x
-            grad[idx] = np.sum((y1.data - y0.data)) / (2 * eps)
+            grad[idx] = xp.sum((y1.data - y0.data)) / (2 * eps)
         grads.append(grad)
     return grads
 
@@ -94,7 +95,7 @@ def plot_dot_graph(output, verbose=True, to_file='graph.png'):
 # =============================================================================
 # Utility functions for numpy (numpy magic)
 # =============================================================================
-def sum_to(x: np.ndarray, shape: tuple):
+def sum_to(x, shape: tuple):
     """Sum elements along axes to output an array of a given shape.
     Args:
         x (ndarray): Input array.
@@ -146,9 +147,10 @@ def reshape_sum_backward(gy, x_shape, axis, keepdims):
 def logsumexp(x, axis=1):
     m = x.max(axis=axis, keepdims=True)
     y = x - m
-    np.exp(y, out=y)
+    xp = cuda.get_array_module(x)
+    xp.exp(y, out=y)
     s = y.sum(axis=axis, keepdims=True)
-    np.log(s, out=s)
+    xp.log(s, out=s)
     m += s
     return m
 

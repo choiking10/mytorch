@@ -1,5 +1,3 @@
-import numpy as np
-
 import mytorch
 from mytorch import Function, core
 from mytorch import as_variable, Variable
@@ -8,7 +6,8 @@ from mytorch import utils
 
 class Sin(Function):
     def forward(self, x):
-        y = np.sin(x)
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.sin(x)
         return y
 
     def backward(self, gy):
@@ -22,7 +21,8 @@ def sin(x):
 
 class Cos(Function):
     def forward(self, x):
-        y = np.cos(x)
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.cos(x)
         return y
 
     def backward(self, gy):
@@ -36,7 +36,8 @@ def cos(x):
 
 class Tanh(Function):
     def forward(self, x):
-        y = np.tanh(x)
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.tanh(x)
         return y
 
     def backward(self, gy):
@@ -54,16 +55,16 @@ class Reshape(Function):
         self.shape = shape
         self.x_shape = None
 
-    def forward(self, x: np.ndarray):
+    def forward(self, x):
         self.x_shape = x.shape
         y = x.reshape(self.shape)
         return y
 
-    def backward(self, gy: np.ndarray):
+    def backward(self, gy):
         return reshape(gy, self.x_shape)
 
 
-def reshape(x: np.ndarray or Variable, shape):
+def reshape(x, shape):
     if x.shape == shape:
         return as_variable(x)
     else:
@@ -71,7 +72,7 @@ def reshape(x: np.ndarray or Variable, shape):
 
 
 class Transpose(Function):
-    def forward(self, x: np.ndarray):
+    def forward(self, x):
         return x.transpose()
 
     def backward(self, gy: Variable):
@@ -86,8 +87,9 @@ class BroadcastTo(Function):
     def __init__(self, shape):
         self.shape = shape
 
-    def forward(self, x: np.ndarray):
-        y = np.broadcast_to(x, self.shape)
+    def forward(self, x):
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.broadcast_to(x, self.shape)
         return y
 
     def backward(self, gy: Variable):
@@ -106,7 +108,7 @@ class SumTo(Function):
     def __init__(self, shape):
         self.shape = shape
 
-    def forward(self, x: np.ndarray):
+    def forward(self, x):
         y = utils.sum_to(x, self.shape)
         return y
 
@@ -127,8 +129,9 @@ class Sum(Function):
         self.axis = axis
         self.keepdims = keepdims
 
-    def forward(self, x:np.ndarray):
-        y = np.sum(x, axis=self.axis, keepdims=self.keepdims)
+    def forward(self, x):
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.sum(x, axis=self.axis, keepdims=self.keepdims)
         return y
 
     def backward(self, gy: Variable):
@@ -143,7 +146,7 @@ def sum(x, axis=None, keepdims=False):
 
 
 class MatMul(Function):
-    def forward(self, x: np.ndarray, W: np.ndarray):
+    def forward(self, x, W):
         y = x.dot(W)
         return y
 
@@ -177,8 +180,9 @@ def mean_squared_error(x0, x1):
 
 
 class Linear(Function):
-    def forward(self, x: np.ndarray, W: np.ndarray, b: np.ndarray):
-        y = np.dot(x, W)
+    def forward(self, x, W, b):
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.dot(x, W)
         if b is not None:
             y = y + b
         return y
@@ -209,8 +213,9 @@ def linear_simple(x, W, b=None):
 
 
 class Sigmoid(Function):
-    def forward(self, x: np.ndarray):
-        return 1 / (1 + np.exp(-x))
+    def forward(self, x):
+        xp = mytorch.cuda.get_array_module(x)
+        return 1 / (1 + xp.exp(-x))
 
     def backward(self, gy: Variable):
         y = self.get_output_data()
@@ -223,7 +228,8 @@ def sigmoid(x):
 
 class Exp(Function):
     def forward(self, x):
-        return np.exp(x)
+        xp = mytorch.cuda.get_array_module(x)
+        return xp.exp(x)
 
     def backward(self, gy):
         x = self.get_input_data()
@@ -259,8 +265,9 @@ class GetItemGrad(Function):
         self.in_shape = in_shape
 
     def forward(self, gy):
-        gx = np.zeros(self.in_shape)
-        np.add.at(gx, self.slices, gy)
+        xp = mytorch.cuda.get_array_module(x)
+        gx = xp.zeros(self.in_shape)
+        xp.add.at(gx, self.slices, gy)
         return gx
 
     def backward(self, ggx):
@@ -271,9 +278,10 @@ class Softmax(Function):
     def __init__(self, axis=1):
         self.axis = axis
 
-    def forward(self, x: np.ndarray):
+    def forward(self, x):
+        xp = mytorch.cuda.get_array_module(x)
         y = x - x.max(axis=self.axis, keepdims=True)
-        y = np.exp(y)
+        y = xp.exp(y)
         y /= y.sum(axis=self.axis, keepdims=True)
         return y
 
@@ -291,21 +299,23 @@ def softmax(x, axis=1):
 
 class SoftmaxCrossEntropy(Function):
     def forward(self, x, t):
+        xp = mytorch.cuda.get_array_module(x)
         N = x.shape[0]
         log_z = utils.logsumexp(x, axis=1)
         log_p = x - log_z
-        log_p = log_p[np.arange(N), t.ravel()]
-        y = -log_p.sum() / np.float32(N)
+        log_p = log_p[xp.arange(N), t.ravel()]
+        y = -log_p.sum() / xp.float32(N)
         return y
 
     def backward(self, gy):
         x, t = self.inputs
         N, CLS_NUM = x.shape
+        xp = mytorch.cuda.get_array_module(x)
 
         gy *= 1/N
         y = softmax(x)
         # convert to one-hot
-        t_onehot = np.eye(CLS_NUM, dtype=t.dtype)[t.data]
+        t_onehot = xp.eye(CLS_NUM, dtype=t.dtype)[t.data]
         y = (y - t_onehot) * gy
         return y
 
@@ -324,7 +334,8 @@ def accuracy(y, t):
 
 class ReLU(Function):
     def forward(self, x):
-        y = np.maximum(x, 0.0)
+        xp = mytorch.cuda.get_array_module(x)
+        y = xp.maximum(x, 0.0)
         return y
 
     def backward(self, gy):
