@@ -23,6 +23,7 @@ else:
 
     from mytorch import utils
     from mytorch import functions
+    from mytorch import functions_conv
     from mytorch import optimizers
     from mytorch import datasets
     from mytorch import cuda
@@ -30,6 +31,7 @@ else:
     from mytorch.models import Model
     from mytorch.datasets import Dataset
     from mytorch.dataloaders import DataLoader
+    import mytorch.functions_conv
 
 
 setup_variable()

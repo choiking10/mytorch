@@ -1,3 +1,4 @@
+import numpy as np
 import mytorch
 from mytorch import Function, core, cuda
 from mytorch import as_variable, Variable
@@ -72,15 +73,24 @@ def reshape(x, shape):
 
 
 class Transpose(Function):
+    def __init__(self, axes=None):
+        self.axes = axes
+
     def forward(self, x):
-        return x.transpose()
+        y = x.transpose(self.axes)
+        return y
 
-    def backward(self, gy: Variable):
-        return transpose(gy)
+    def backward(self, gy):
+        if self.axes is None:
+            return transpose(gy)
+
+        axes_len = len(self.axes)
+        inv_axes = tuple(np.argsort([ax % axes_len for ax in self.axes]))
+        return transpose(gy, inv_axes)
 
 
-def transpose(x):
-    return Transpose()(x)
+def transpose(x, axes=None):
+    return Transpose(axes)(x)
 
 
 class BroadcastTo(Function):

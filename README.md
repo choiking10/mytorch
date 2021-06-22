@@ -36,7 +36,7 @@ docker run --gpus all -it --rm -v $PWD:/workspace -p 8001:8001 mytorch \
   - [고지 3 - 미완](https://github.com/choiking10/mytorch/tree/chapter3-incompletion)
   - [고지 4](https://github.com/choiking10/mytorch/tree/chapter4)
 
-## Dezero 구현하기 진행도 Step 별 (54/60)
+## Dezero 구현하기 진행도 Step 별 (57/60)
   - [step01](https://github.com/choiking10/mytorch/tree/step01)
   - [step02](https://github.com/choiking10/mytorch/tree/step02)
   - [step03](https://github.com/choiking10/mytorch/tree/step03)
@@ -80,4 +80,5 @@ docker run --gpus all -it --rm -v $PWD:/workspace -p 8001:8001 mytorch \
   - [step52 - GPU 지원](https://github.com/choiking10/mytorch/tree/step52)
   - [step53 - 모델 저장 및 읽어오기](https://github.com/choiking10/mytorch/tree/step53)
   - [step54 - 드롭아웃과 테스트 모드](https://github.com/choiking10/mytorch/tree/step54)
+  - [step55-57 - CNN](http://github.com/choiking10/mytorch/tree/step55-57)
 
