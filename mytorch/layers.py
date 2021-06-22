@@ -57,7 +57,7 @@ class Layer:
     def _flatten_params(self, params_dict, parent_key=''):
         for name in self._params:
             obj = self.__dict__[name]
-            key = parent_key + "/" + "name" if parent_key else name
+            key = parent_key + "/" + name if parent_key else name
 
             if isinstance(obj, Layer):
                 obj._flatten_params(params_dict, key)
